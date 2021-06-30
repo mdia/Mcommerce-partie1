@@ -11,12 +11,15 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Api( description="API pour es opérations CRUD sur les produits.")
@@ -31,7 +34,6 @@ public class ProductController {
     //Récupérer la liste des produits
 
     @RequestMapping(value = "/Produits", method = RequestMethod.GET)
-
     public MappingJacksonValue listeProduits() {
 
         Iterable<Product> produits = productDao.findAll();
@@ -103,6 +105,15 @@ public class ProductController {
         return productDao.chercherUnProduitCher(400);
     }
 
+    @GetMapping(value = "/AdminProduits")
+    public Map<String, Integer> calculerMargeProduit (){
+        Map<String, Integer> results = new HashMap<>();
+        List<Product> products = productDao.findAll();
+        if(!CollectionUtils.isEmpty(products)){
+            products.forEach(product -> results.put(product.toString(), product.getPrix()-product.getPrixAchat()));
+        }
+        return  results;
+    }
 
 
 }
